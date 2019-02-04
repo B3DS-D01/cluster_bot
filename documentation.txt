@@ -1,0 +1,56 @@
+This program initialy cluster the texts into different clusters based on the keywords and assign each sentence to a respective cluster. Then chatbot search for the answer of the query of user within the respective cluster.
+
+For instance, this program makes 3 clusters.
+
+step 1- Creating different clusters of the sentences based on keywords- 
+
+	In cluster() function - We used K-means clustering algo for making clusters. Then we store the indices of each cluster in lists- label0, label1 and label2. Then we store the sentences into different lists l0,l1 and l2 based upon keywords and clustering.
+	Then we print the top 10 significant terms in each clusters.
+
+step 2- User ask a query and chatbot uses this to get the user_response in json format. This user_response is used to predict in which cluster the sentence will fall.
+
+
+	firstly we have imported all the essential libraries.
+
+	Then we have open the ipfile.txt which have some basic questions and answers about the api and indicoio package. We split the string into different sentences and assign 'x' variable for question and 'y' variable for answers. then we entered the x as key and y as value of faqs dictionary.
+
+	calculate_distance() - It return the cosine distance between feats (vectors)
+
+	similarity_text() - we have created object t of the class Texttable() and set the width of the columns of the table as 50 and 20. then we find the sorted_distance_idxs by using numpy argsort function which returns the indices that would sort the distance_matrix array.
+
+		In most_sim_idx we have taken the 2nd element of the sorted_distance_idx. Then we iterate over the sorted_distance_idxs and check the similarity between the words. If similarity between the words is more than 0.75 then we assign the result to faq_match. Otherwise we return a 'sorry' message.
+
+		if faq_match is not None, then we add the faq_match output as value of the 'MESSAGE' key. and dumps (save) into the json format. else we return 'sorry' message.
+
+	run() - In this we have load the pickle file that we have saved in Create_Feats.py and return the Faq_respone. this Faq_response uses similarity_text() to find the similarity between texts.
+
+	* Now we opened the sports.txt (or any file which contain the text data) in the read mode and convert the text into lower case. Then we tokenize the whole text into multiple individual sentences using sent_tokenize() and then tokenize sentences or texts into different words using word_tokenize()
+
+	* Then we train the model using all the sentences of the file (sports.txt) and transform into a vector named 'X'
+
+	LemTokens() used nltk library for stemming of words to reduce the sparsity.
+
+	LemNormalize() uses the LemTokens function and then normalize it i.e it removes punctuation, lowercase the text, etc.
+
+	greeting() - If users entered a greeting that we have defined in GREETING_INPUTS list, it randomly choose a response from GREETING_RESPONSE list. then we save the greeting in the json format and return the response ie. robo_response.
+
+	response() - It is used to generate response. It accepts user_response and checks the predicted cluster number and then append to the respective list (l0, l1, l2). and uses the run() function. this run() checks the similarity between the words and if it doesnot find similarity it returned FAQ_OUT i.e return the run(). otherwise, if there is similarity.. we check in which cluster the user input will fall and we used respective cluster to get the most relevant word from the user's input and fit_transform it to tfidf variable. then we check the cosine_similarity between the last element and other elements of tfidf.Then we use the index of second last element. Then we have flattened this array and sort it accordingly on the basis of cosine_similarity.
+
+	from this sorted list, we take 2nd last element and assign it to req_tfidf variable. If req_tfidf == 0 i.e. there is no similarity between words and it returns a 'sorry' message. otherwise we return the proper answer of the query. then we created a file to store the current question and result i.e. FAQ_UPD.txt
+
+	This whole program runs until flag=True, if user enters some greeting, program will call the greeting function and greet the user. if user enters some question other than greeting or 'thanks' and 'thank you', program will call the response() function and prints the response.
+
+	if user_response == 'bye' then the flag will be false and the code will stop and exits. 
+
+
+
+
+step 3- Create_Feats.py-
+
+	make_feats() is used to send the data through indicoio api to convert the text into the vector representation using text_features method and then stored them in a list (feats) and return the same feats list.
+
+	run() function - we have taken the data as a list (faqs) and then convert the data into vectors using make_feats() function. Then we have stored these vector (or feats) into faq_feats.pkl with the help of pickling. So that we can deserialize it later in the same state.
+
+
+NOTE - Always provide the user input in terminal in json format. 
+		eg. {"API_INPUT":"MESSENGER","MESSAGE":"when was football played in india?"}
